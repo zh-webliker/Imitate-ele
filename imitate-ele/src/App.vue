@@ -1,23 +1,36 @@
 <template>
   <div id="app">
-    <img src="./assets/logo.png">
-    <router-view/>
+    <el-header :seller="seller"></el-header>
   </div>
 </template>
 
 <script>
+import { seller } from './api/api'
+import header from './components/head/head.vue'
+
 export default {
-  name: 'App'
+  name: 'App',
+  components: {
+    'el-header': header
+  },
+  data () {
+    return {
+      seller: {
+      }
+    }
+  },
+  created () {
+    seller().then(res => {
+      console.log(res.data.data)
+      this.seller = res.data.data
+    })
+  }
 }
 </script>
 
-<style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+<style lang='scss'>
+  body,html{
+    margin: 0;
+    padding: 0;
+  }
 </style>
