@@ -89,6 +89,7 @@ img {
 }
 .head_component{
   position: relative;
+  overflow: hidden;
   color: rgb(255,255,255);
   background: rgba(7,17,27,0.5);
 }

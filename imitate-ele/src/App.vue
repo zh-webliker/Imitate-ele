@@ -1,6 +1,20 @@
 <template>
   <div id="app">
     <el-header :seller="seller"></el-header>
+    <div class="tab">
+      <div class="tab-item">
+        <router-link to='/goods'>商品</router-link>
+      </div>
+      <div class="tab-item">
+        <router-link to='/ratings'>评价</router-link>
+      </div>
+      <div class="tab-item">
+        <router-link to='/seller'>商家</router-link>
+      </div>
+    </div>
+    <keep-alive>
+      <router-view ></router-view>
+    </keep-alive>
   </div>
 </template>
 
@@ -16,12 +30,12 @@ export default {
   data () {
     return {
       seller: {
-      }
+      },
+      isActive: true
     }
   },
   created () {
     seller().then(res => {
-      console.log(res.data.data)
       this.seller = res.data.data
     })
   }
@@ -33,4 +47,22 @@ export default {
     margin: 0;
     padding: 0;
   }
-</style>
+  .tab{
+    display: flex;
+    text-align: center;
+    .tab-item{
+      width: 33.33%;
+      height: 40px;
+      line-height: 40px;
+      color: #4d555d;
+      font-size: 14px;
+      a{
+        text-decoration: none;
+      }
+    }
+    .active{
+      color: red;
+      text-decoration: none;
+    }
+  }
+  </style>
