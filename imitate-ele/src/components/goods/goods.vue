@@ -2,11 +2,11 @@
   <div class="goods">
     <div class="left_food_title" ref="menuWrapper">
       <ul class="food_title">
-        <li v-for="(item, index) in goodsAtroduce" :key="index">{{item.name}}</li>
+        <li v-for="(item, index) in goodsAtroduce" :key="index" @click="clickMenuItem(index,$event)" :class="index == current ? 'active' : ''">{{item.name}}</li>
       </ul>
     </div>
     <div class="right_food_detail" ref="foodsWrapper">
-      <div>
+      <div class="food_detail_box">
         <div v-for="(good, index1) in goodsAtroduce" :key='index1' class="food_unit">
           <div class="unit_name"><div class="line"></div>{{good.name}}</div>
           <div v-for='(items, index2) in good.foods' :key='index2' class="unit_have_food">
@@ -35,7 +35,9 @@ import Vue from 'vue'
 export default {
   data () {
     return {
-      goodsAtroduce: []
+      goodsAtroduce: [],
+      tops: [],
+      current: 0
     }
   },
   created () {
@@ -47,6 +49,7 @@ export default {
         Vue.nextTick(() => {
           // 初始化滚动条
           this.initScroll()
+          this._initTops()
         })
       }
     })
@@ -67,12 +70,37 @@ export default {
       this.foodsScroll.on('scroll', (pos) => {
         console.log(pos.y, 'pos')
       })
+    },
+    _initTops () {
+      let top = 0
+      this.tops.push(top)
+      let lis = this.$refs.foodsWrapper.getElementsByClassName('food_unit')
+      ;[].slice.call(lis).forEach(li => {
+        // 拿到div的高度
+        console.log(li.clientHeight, top)
+        top += li.clientHeight
+        // 拿到每个标题对应的位置
+        this.tops.push(top)
+      })
+    },
+    clickMenuItem (index, event) {
+      if (!event._constructed) { //  如果没有这个属性，则认为是原生事件，不执行下面函数
+        return
+      }
+      console.log(index)
+      // 点击菜单右边滚到对应位置
+      this.current = index
+      var li = this.$refs.foodsWrapper.getElementsByClassName('food_unit')[index]
+      this.foodsScroll.scrollToElement(li, 300)
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
+.active{
+  background-color: #fff !important;
+}
 .goods{
   display: flex;
   position: absolute;
@@ -94,12 +122,11 @@ export default {
     }
   }
   .right_food_detail{
-    // position: absolute;
-    // top: 0;
-    // left: 100px;
-    // right: 0;
-    // bottom: 0;
+    flex: 1;
     overflow: hidden;
+    .food_detail_box{
+      height: auto;
+    }
   }
 }
 .food_img{
