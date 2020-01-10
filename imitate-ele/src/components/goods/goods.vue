@@ -9,7 +9,7 @@
       <div class="food_detail_box">
         <div v-for="(good, index1) in goodsAtroduce" :key='index1' class="food_unit">
           <div class="unit_name"><div class="line"></div>{{good.name}}</div>
-          <div v-for='(items, index2) in good.foods' :key='index2' class="unit_have_food">
+          <div v-for='(items, index2) in good.foods' :key='index2' class="unit_have_food" @click="clickFood(items,$event)">
             <img :src="items.image" class="food_img">
             <div class="food_introduce">
               <div class="food_name">{{items.name}}</div>
@@ -24,6 +24,7 @@
         </div>
       </div>
     </div>
+    <food :food='selectedFood' ref="foodChild"></food>
   </div>
 </template>
 
@@ -32,13 +33,18 @@ import { goods } from '../../api/api'
 import BScroll from 'better-scroll'
 import Vue from 'vue'
 
+import food from '../food/food.vue'
 export default {
   data () {
     return {
       goodsAtroduce: [],
       tops: [],
-      current: 0
+      current: 0,
+      selectedFood: {}
     }
+  },
+  components: {
+    food
   },
   created () {
     goods().then(res => {
@@ -92,6 +98,14 @@ export default {
       this.current = index
       var li = this.$refs.foodsWrapper.getElementsByClassName('food_unit')[index]
       this.foodsScroll.scrollToElement(li, 300)
+    },
+    clickFood (food, event) {
+      console.log(food, event)
+      if (!event._constructed) {
+        return
+      }
+      this.selectedFood = food
+      this.$refs.foodChild.show(true) // this.$refs.子组件ref名.子组件方法 调用子组件方法
     }
   }
 }
