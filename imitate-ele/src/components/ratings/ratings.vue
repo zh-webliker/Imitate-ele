@@ -10,10 +10,12 @@
         <div class="info_right">
           <div class="serve">
             <div>服务态度</div>
+            <start :score='seller.serviceScore' :size='24'></start>
             <div>{{seller.serviceScore}}</div>
           </div>
           <div class="goods">
             <div>商品评分</div>
+            <start :score='seller.foodScore' :size='24'></start>
             <div>{{seller.foodScore}}</div>
           </div>
           <div class="delivery">
@@ -37,10 +39,10 @@
               <div class="user_info">
                 <div>
                   <div>{{items.username}}</div>
-                  <div>{{items.rateTime}}</div>
+                  <div>{{nowTime(items.rateTime)}}</div>
                 </div>
                 <div>
-                  <div>{{items.rateTime}}</div>
+                  <start :score='items.score' :size='24'></start>
                   <div class="time">{{items.deliveryTime}}分钟送达</div>
                 </div>
                 <div class="text">{{items.text}}</div>
@@ -64,12 +66,15 @@ import Vue from 'vue'
 import BScroll from 'better-scroll'
 import ratingSelect from '../ratingSelect/ratingSelect'
 import splice from '../splice/splice'
+import start from '../start/start'
 import {ratings, seller} from '../../api/api'
+import {nowTime} from '../../common/common'
 let ratingArray = []
 export default{
   components: {
     ratingSelect,
-    splice
+    splice,
+    start
   },
   data () {
     return {
@@ -102,6 +107,9 @@ export default{
     })
   },
   methods: {
+    // nowTimeP (time) {
+    //   console.log(nowTime(time))
+    // },
     chooseRatingType (type, val) {
       console.log(type, val, 'type')
       this.contentType = type
@@ -141,6 +149,13 @@ export default{
           }
         }
         this.ratings = newRatingsArray
+      }
+    }
+  },
+  computed: {
+    nowTime () {
+      return function (time) {
+        return nowTime(time)
       }
     }
   }

@@ -36,7 +36,7 @@
             <ul>
               <li v-for='(items, index) in ratings' :key='index'>
                 <div class="user_info">
-                  <div class="rateTime">{{items.rateTime}}</div>
+                  <div class="rateTime">{{nowTime(items.rateTime)}}</div>
                   <div class="name">
                     <div>{{items.username}}</div>
                     <img :src="items.avatar" alt="">
@@ -55,6 +55,7 @@
 import Vue from 'vue'
 import BScroll from 'better-scroll'
 import ratingSelect from '../ratingSelect/ratingSelect'
+import {nowTime} from '../../common/common'
 let ratingArray = []
 export default {
   props: {
@@ -78,7 +79,13 @@ export default {
   },
   created () {
   },
-  computed: {},
+  computed: {
+    nowTime () {
+      return function (time) {
+        return nowTime(time)
+      }
+    }
+  },
   methods: {
     show (isShow) {
       this.isShow = !this.isShow
