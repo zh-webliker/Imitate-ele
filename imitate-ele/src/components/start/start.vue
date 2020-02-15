@@ -58,7 +58,9 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-
+img{
+  display: block;
+}
 .start{
   margin: 0 10px;
   font-size: 0 !important; // 解决循环出的span与写出的Span之间出现的间距
