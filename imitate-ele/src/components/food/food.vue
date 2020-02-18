@@ -16,7 +16,12 @@
           </div>
           <div class="head_buy">
             <div class="buy_price">￥{{food.price}}</div>
-            <div class="buy_shopcart">加入购物车</div>
+            <div class="buy_shopcart" v-if='singleNumF === 0'>加入购物车</div>
+            <CartContro
+            :singlePrice='food.price'
+            :singleNumP='singleNumF'
+            @getTotalPrice='getTotalPrice'
+            v-else></CartContro>
           </div>
         </div>
         <div class="food_intro_body">
@@ -55,14 +60,21 @@
 import Vue from 'vue'
 import BScroll from 'better-scroll'
 import ratingSelect from '../ratingSelect/ratingSelect'
+import CartContro from '../cartContro/cartContro'
+import {mapState, mapMutations} from 'vuex'
 import {nowTime} from '../../common/common'
 let ratingArray = []
 export default {
   props: {
-    food: Object
+    food: Object,
+    singleNumP: {
+      type: Number,
+      default: 0
+    }
   },
   components: {
-    ratingSelect
+    ratingSelect,
+    CartContro
   },
   data () {
     return {
@@ -74,7 +86,8 @@ export default {
         positive: '推荐',
         negative: '吐槽'
       },
-      contentType: 0
+      contentType: 0,
+      singleNumF: 0
     }
   },
   created () {
@@ -84,9 +97,17 @@ export default {
       return function (time) {
         return nowTime(time)
       }
-    }
+    },
+    ...mapState(['totalPrice'])
   },
   methods: {
+    ...mapMutations(['getTotalPriceV']),
+    getTotalPrice (val, type, count) {
+      console.log('getTotalPrice', type, count)
+      this.singleNumF = count
+      this.getTotalPriceV({num: val, type: type}) // vuex mutation 方法传参,getTotalPriceV接收的时候是一个对象
+      this.$emit('emitSingleNum', this.singleNumF)
+    },
     show (isShow) {
       this.isShow = !this.isShow
       if (isShow) {
@@ -150,6 +171,9 @@ export default {
     'food.ratings': function (val) { // 异步问题导致props传过来的值不能准确赋给data里的值，所以用watch监听
       this.ratings = val
       this.ratingsLength = val
+    },
+    singleNumP: function (val) {
+      this.singleNumF = val
     }
     // contentType: {
     //   handler (newVal, oldVal) {

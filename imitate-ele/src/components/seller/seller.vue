@@ -70,7 +70,6 @@ import start from '../start/start'
 import splice from '../splice/splice'
 import {mapState, mapMutations} from 'vuex'
 import BScroll from 'better-scroll'
-import Vue from 'vue'
 export default {
   components: {
     start,
@@ -78,7 +77,7 @@ export default {
   },
   data () {
     return {
-      seller: [],
+      seller: {},
       length: 0
     }
   },
@@ -87,7 +86,8 @@ export default {
       liker: 'liker'
     }),
     getWidth () {
-      return this.length * 120 + 8 * (this.length - 1) // 为什么取不到this.seller.pics.length?
+      console.log(this.seller)
+      return this.length * 120 + 8 * (this.length - 1) // 1.this.seller.pics.length 报错，seller此时是{}，空指针异常；2.computed执行
     }
   },
   methods: {
@@ -99,7 +99,7 @@ export default {
       this.length = res.data.data.pics.length
       this.seller = res.data.data
     })
-    Vue.nextTick(() => {
+    this.$nextTick(() => {
       /* eslint-disable no-new */
       new BScroll(this.$refs.scene, {
         click: true,

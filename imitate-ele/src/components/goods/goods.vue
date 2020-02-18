@@ -18,13 +18,28 @@
                 <span>月售{{items.sellCount}}</span>
                 <span>好评率{{items.sellCount}}</span>
               </div>
-              <div class="food_price">￥{{items.price}}</div>
+              <div class="food_price">
+                <div>￥{{items.price}}</div>
+                <div>
+                  <carcontrol
+                  :singlePrice='items.price'
+                  :singleNumP='singleNumP'
+                  @getTotalPrice='getTotalPrice'
+                  ></carcontrol>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <food :food='selectedFood' ref="foodChild"></food>
+    <div class="shopcart">
+      <shopcart :totalPrice='20' :shopNum='1'></shopcart>
+    </div>
+    <food :food='selectedFood'
+    :singleNumP='singleNumP'
+    @emitSingleNum='emitSingleNum'
+    ref="foodChild"></food>
   </div>
 </template>
 
@@ -32,19 +47,27 @@
 import { goods } from '../../api/api'
 import BScroll from 'better-scroll'
 import Vue from 'vue'
-
+import shopcart from '../shopcart/shopcart'
+import carcontrol from '../cartContro/cartContro'
 import food from '../food/food.vue'
+import {mapState, mapMutations} from 'vuex'
 export default {
   data () {
     return {
       goodsAtroduce: [],
       tops: [],
       current: 0,
-      selectedFood: {}
+      selectedFood: {},
+      singleNumP: 0
     }
   },
   components: {
-    food
+    food,
+    shopcart,
+    carcontrol
+  },
+  computed: {
+    ...mapState(['totalPrice'])
   },
   created () {
     goods().then(res => {
@@ -61,6 +84,10 @@ export default {
     })
   },
   methods: {
+    ...mapMutations(['getTotalPriceV']),
+    emitSingleNum (val) {
+      this.singleNumP = val
+    },
     initScroll () {
       // 创建分类列表的Scroll
       /* eslint-disable no-new */
@@ -106,6 +133,11 @@ export default {
       }
       this.selectedFood = food
       this.$refs.foodChild.show(true) // this.$refs.子组件ref名.子组件方法 调用子组件方法
+    },
+    getTotalPrice (val, type, count) {
+      console.log('getTotalPrice', type, count)
+      this.singleNumP = count
+      this.getTotalPriceV({num: val, type: type}) // vuex mutation 方法传参,getTotalPriceV接收的时候是一个对象
     }
   }
 }
@@ -114,6 +146,14 @@ export default {
 <style lang="scss" scoped>
 .active{
   background-color: #fff !important;
+}
+.shopcart{
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 48px;
+  background-color: #141d27;
 }
 .goods{
   display: flex;
@@ -140,6 +180,10 @@ export default {
     overflow: hidden;
     .food_detail_box{
       height: auto;
+      .food_price{
+        display: flex;
+        justify-content: space-between;
+      }
     }
   }
 }
