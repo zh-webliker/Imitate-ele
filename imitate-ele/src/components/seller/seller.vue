@@ -6,7 +6,7 @@
           <div class="name_detail">
             <div>{{seller.name}}</div>
             <div>
-              <start :size='36' :score='seller.deliveryPrice'></start>
+              <Start :size='36' :score='seller.deliveryPrice'></Start>
               <span class="sell_count">({{seller.ratingCount}})</span>
               <span class="sell_count">月售{{seller.sellCount}}单</span>
             </div>
@@ -31,7 +31,7 @@
           </div>
         </div>
       </div>
-      <splice></splice>
+      <Splice></Splice>
       <div class="notice_box">
         <div class="title">公告与活动</div>
         <div class="content">{{seller.bulletin}}</div>
@@ -41,7 +41,7 @@
           </ul>
         </div>
       </div>
-      <splice></splice>
+      <Splice></Splice>
       <div class="scene_box">
         <div class="title">商场实景</div>
         <div class="content" ref="scene">
@@ -51,7 +51,7 @@
           </div>
         </div>
       </div>
-      <splice></splice>
+      <Splice></Splice>
       <div class="info_box">
         <div class="title">商场信息</div>
         <div class="content">
@@ -65,15 +65,15 @@
 </template>
 
 <script>
-import {seller} from '../../api/api'
-import start from '../start/start'
-import splice from '../splice/splice'
-import {mapState, mapMutations} from 'vuex'
 import BScroll from 'better-scroll'
+import Start from '../start/start'
+import Splice from '../splice/splice'
+import {mapState, mapMutations} from 'vuex'
+import {seller} from '../../api/api'
 export default {
   components: {
-    start,
-    splice
+    Start,
+    Splice
   },
   data () {
     return {

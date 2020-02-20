@@ -24,13 +24,13 @@
           </div>
         </div>
       </div>
-      <splice></splice>
+      <Splice></Splice>
       <div class="ratingList">
-        <ratingSelect
+        <RatingSelect
           :ratingType='ratingType'
           :ratings='oldRatings'
           @chooseRatingType='chooseRatingType'
-          @haveText='chooseRatingType'></ratingSelect>
+          @haveText='chooseRatingType'></RatingSelect>
           <ul>
             <li v-for='(items, index) in ratings' :key="index">
               <div class="user_avter">
@@ -42,7 +42,7 @@
                   <div>{{nowTime(items.rateTime)}}</div>
                 </div>
                 <div>
-                  <start :score='items.score' :size='24'></start>
+                  <Start :score='items.score' :size='24'></Start>
                   <div class="time">{{items.deliveryTime}}分钟送达</div>
                 </div>
                 <div class="text">{{items.text}}</div>
@@ -64,17 +64,17 @@
 <script>
 import Vue from 'vue'
 import BScroll from 'better-scroll'
-import ratingSelect from '../ratingSelect/ratingSelect'
-import splice from '../splice/splice'
-import start from '../start/start'
+import RatingSelect from '../ratingSelect/ratingSelect'
+import Splice from '../splice/splice'
+import Start from '../start/start'
 import {ratings, seller} from '../../api/api'
 import {nowTime} from '../../common/common'
 let ratingArray = []
 export default{
   components: {
-    ratingSelect,
-    splice,
-    start
+    RatingSelect,
+    Splice,
+    Start
   },
   data () {
     return {

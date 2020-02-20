@@ -16,8 +16,11 @@
           </div>
           <div class="head_buy">
             <div class="buy_price">￥{{food.price}}</div>
-            <div class="buy_shopcart" v-if='singleNumF === 0'>加入购物车</div>
+            <div class="buy_shopcart"
+              v-if='singleNumF === 0'
+              @click="addGoods()">加入购物车</div>
             <CartContro
+            ref="child1"
             :singlePrice='food.price'
             :singleNumP='singleNumF'
             @getTotalPrice='getTotalPrice'
@@ -31,11 +34,11 @@
         <div class="food_comment_foot">
           <div>商品评价</div>
           <div>
-            <ratingSelect
+            <RatingSelect
             :ratingType='ratingType'
             :ratings='ratingsLength'
             @chooseRatingType='chooseRatingType'
-            @haveText='chooseRatingType'></ratingSelect>
+            @haveText='chooseRatingType'></RatingSelect>
           </div>
           <div class="rating_list">
             <ul>
@@ -59,21 +62,21 @@
 <script>
 import Vue from 'vue'
 import BScroll from 'better-scroll'
-import ratingSelect from '../ratingSelect/ratingSelect'
+import RatingSelect from '../ratingSelect/ratingSelect'
 import CartContro from '../cartContro/cartContro'
 import {mapState, mapMutations} from 'vuex'
 import {nowTime} from '../../common/common'
 let ratingArray = []
 export default {
   props: {
-    food: Object,
-    singleNumP: {
-      type: Number,
-      default: 0
-    }
+    food: Object
+    // singleNumP: {
+    //   type: Number,
+    //   default: 0
+    // }
   },
   components: {
-    ratingSelect,
+    RatingSelect,
     CartContro
   },
   data () {
@@ -87,7 +90,7 @@ export default {
         negative: '吐槽'
       },
       contentType: 0,
-      singleNumF: 0
+      singleNumF: this.food.count
     }
   },
   created () {
@@ -101,12 +104,28 @@ export default {
     ...mapState(['totalPrice'])
   },
   methods: {
-    ...mapMutations(['getTotalPriceV']),
+    ...mapMutations(['getTotalPriceV', 'goodsAdd']),
     getTotalPrice (val, type, count) {
       console.log('getTotalPrice', type, count)
       this.singleNumF = count
       this.getTotalPriceV({num: val, type: type}) // vuex mutation 方法传参,getTotalPriceV接收的时候是一个对象
       this.$emit('emitSingleNum', this.singleNumF)
+    },
+    addGoods (price) {
+      console.log(this.$refs)
+      this.singleNumF = this.singleNumF + 1
+      // new Promise((resolve, reject) => { // nextTick其中一层原理，除了用nextTick，还可以用promise,setTimeout来实现
+      //   resolve()
+      // }).then(() => {
+      //   this.$refs.child1.add()
+      // })
+      this.$nextTick(() => { // 异步更新队列
+        this.$refs.child1.add() // 调用子组件方法
+      })
+      // if (this.$refs.child1) {
+      //   this.$refs.child1.add() // 调用子组件方法，
+      // }
+      console.log(this.singleNumF, 'this.singleNumF')
     },
     show (isShow) {
       this.isShow = !this.isShow
@@ -172,33 +191,9 @@ export default {
       this.ratings = val
       this.ratingsLength = val
     },
-    singleNumP: function (val) {
+    'food.count': function (val) {
       this.singleNumF = val
     }
-    // contentType: {
-    //   handler (newVal, oldVal) {
-    //     console.log(newVal, oldVal)
-    //     const length = this.foods.ratings.length
-    //     const ratingArray = []
-    //     if (newVal === 0) {
-    //       this.foods = this.food
-    //     } else if (newVal === 1) {
-    //       for (let i = 0; i < length; i++) {
-    //         if (this.foods.ratings.rateType === 0) {
-    //           ratingArray.push(this.foods.ratings.rateType)
-    //         }
-    //       }
-    //       this.foods = ratingArray
-    //     } else if (newVal === 2) {
-    //       for (let i = 0; i < length; i++) {
-    //         if (this.foods.ratings.rateType === 1) {
-    //           ratingArray.push(this.foods.ratings.rateType)
-    //         }
-    //       }
-    //       this.food = ratingArray
-    //     }
-    //   }
-    // }
   }
 }
 </script>

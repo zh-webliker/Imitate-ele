@@ -16,6 +16,15 @@ export default {
     singleNumP: {
       type: Number,
       default: 0
+    },
+    dataIndex: {
+      type: Object,
+      default () {
+        return {
+          index1: '',
+          index2: ''
+        }
+      }
     }
   },
   data () {
@@ -33,18 +42,21 @@ export default {
       if (this.singleNum > 0) {
         this.singleNum = this.singleNum - 1
       }
-      this.$emit('getTotalPrice', this.singlePrice, 'reduce', this.singleNum)
+      this.$emit('getTotalPrice', this.singlePrice, 'reduce', this.singleNum, this.dataIndex)
     },
     add () {
       this.goodsAdd()
       this.singleNum = this.singleNum + 1
       console.log(this.singleNum)
-      this.$emit('getTotalPrice', this.singlePrice, 'add', this.singleNum)
+      this.$emit('getTotalPrice', this.singlePrice, 'add', this.singleNum, this.dataIndex)
+    },
+    updatasingleNumP (val) {
+      this.singleNum = val
     }
   },
   watch: {
-    singleNumP: function (val) {
-      this.singleNum = val
+    singleNumP: function (val) { // watch 监听数据改变，此时需要对dom进行显示隐藏的时候，就需要在methods写一个方法，然后调用methods里的方法
+      this.updatasingleNumP(val)
     }
   }
 }

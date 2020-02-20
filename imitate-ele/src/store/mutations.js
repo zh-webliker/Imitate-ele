@@ -24,6 +24,11 @@ const mutations = {
       state.totalPrice = state.totalPrice - obj.num
       console.log(state.totalPrice, 'reduce')
     }
+  },
+  getGoodsIndex (state, obj) {
+    state.array1 = obj.array1
+    state.array2 = obj.array2
+    console.log(state.array1, state.array2, obj)
   }
 }
 export default mutations

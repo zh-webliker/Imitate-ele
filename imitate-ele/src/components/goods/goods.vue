@@ -9,7 +9,7 @@
       <div class="food_detail_box">
         <div v-for="(good, index1) in goodsAtroduce" :key='index1' class="food_unit">
           <div class="unit_name"><div class="line"></div>{{good.name}}</div>
-          <div v-for='(items, index2) in good.foods' :key='index2' class="unit_have_food" @click="clickFood(items,$event)">
+          <div v-for='(items, index2) in good.foods' :key='index2' class="unit_have_food" @click="clickFood(items,$event,index1,index2)">
             <img :src="items.image" class="food_img">
             <div class="food_introduce">
               <div class="food_name">{{items.name}}</div>
@@ -21,11 +21,12 @@
               <div class="food_price">
                 <div>￥{{items.price}}</div>
                 <div>
-                  <carcontrol
+                  <Carcontrol
                   :singlePrice='items.price'
-                  :singleNumP='singleNumP'
+                  :singleNumP='goodsAtroduce[index1].foods[index2].count'
+                  :dataIndex='{index1: index1, index2: index2}'
                   @getTotalPrice='getTotalPrice'
-                  ></carcontrol>
+                  ></Carcontrol>
                 </div>
               </div>
             </div>
@@ -34,47 +35,54 @@
       </div>
     </div>
     <div class="shopcart">
-      <shopcart :totalPrice='20' :shopNum='1'></shopcart>
+      <Shopcart :totalPrice='20' :shopNum='1'></Shopcart>
     </div>
-    <food :food='selectedFood'
-    :singleNumP='singleNumP'
+    <Food :food='selectedFood'
     @emitSingleNum='emitSingleNum'
-    ref="foodChild"></food>
+    ref="foodChild"></Food>
   </div>
 </template>
 
 <script>
-import { goods } from '../../api/api'
-import BScroll from 'better-scroll'
+// import内容要有顺序，最上面是框架模块，然后是第三方库模块，然后是自己的组件模块，再是api层的模块
 import Vue from 'vue'
-import shopcart from '../shopcart/shopcart'
-import carcontrol from '../cartContro/cartContro'
-import food from '../food/food.vue'
+import BScroll from 'better-scroll'
+import Shopcart from '../shopcart/shopcart'
+import Carcontrol from '../cartContro/cartContro'
+import Food from '../food/food.vue'
 import {mapState, mapMutations} from 'vuex'
+import { goods } from '../../api/api'
 export default {
   data () {
     return {
       goodsAtroduce: [],
       tops: [],
       current: 0,
-      selectedFood: {},
-      singleNumP: 0
+      selectedFood: {}
+      // singleNumP: 0
     }
   },
   components: {
-    food,
-    shopcart,
-    carcontrol
+    Food,
+    Shopcart,
+    Carcontrol
   },
   computed: {
-    ...mapState(['totalPrice'])
+    ...mapState(['totalPrice', 'array1', 'array2'])
   },
   created () {
     goods().then(res => {
-      console.log(res.data)
-      // this.goodsAtroduce = res.data.data
       if (res.data.code === 0) {
-        this.goodsAtroduce = res.data.data
+        // this.goodsAtroduce = res.data.data
+        let list = res.data.data
+        list.forEach((item) => {
+          item.foods.forEach(food => {
+            food.count = 0
+          })
+        })
+        console.log(list, 'data')
+        this.goodsAtroduce = list
+        console.log(this.goodsAtroduce, 'this.goodsAtroduce')
         Vue.nextTick(() => {
           // 初始化滚动条
           this.initScroll()
@@ -84,9 +92,11 @@ export default {
     })
   },
   methods: {
-    ...mapMutations(['getTotalPriceV']),
+    ...mapMutations(['getTotalPriceV', 'getGoodsIndex', 'goodsAdd']),
     emitSingleNum (val) {
-      this.singleNumP = val
+      console.log(val, 'val')
+      console.log(this.array1, this.array2)
+      this.goodsAtroduce[this.array1].foods[this.array2].count = val
     },
     initScroll () {
       // 创建分类列表的Scroll
@@ -126,17 +136,19 @@ export default {
       var li = this.$refs.foodsWrapper.getElementsByClassName('food_unit')[index]
       this.foodsScroll.scrollToElement(li, 300)
     },
-    clickFood (food, event) {
-      console.log(food, event)
+    clickFood (food, event, index1, index2) {
+      console.log(food, event, index1, index2)
+      this.getGoodsIndex({array1: index1, array2: index2})
+      console.log(this.array1, this.array2)
       if (!event._constructed) {
         return
       }
       this.selectedFood = food
       this.$refs.foodChild.show(true) // this.$refs.子组件ref名.子组件方法 调用子组件方法
     },
-    getTotalPrice (val, type, count) {
+    getTotalPrice (val, type, count, dataIndex) {
       console.log('getTotalPrice', type, count)
-      this.singleNumP = count
+      this.goodsAtroduce[dataIndex.index1].foods[dataIndex.index2].count = count
       this.getTotalPriceV({num: val, type: type}) // vuex mutation 方法传参,getTotalPriceV接收的时候是一个对象
     }
   }
